@@ -35,6 +35,11 @@ Suba o ambiente via docker-compose up -d.
 
 Dispare a DAG pipeline_olist_etl pelo painel do Airflow.
 
+📈 Arquitetura
+
+<img width="1535" height="1024" alt="image" src="https://github.com/user-attachments/assets/cacfc20a-dbbb-4ff5-ac0e-97681011f055" />
+
+
 📈 Resultados
 
 <img width="1095" height="557" alt="image" src="https://github.com/user-attachments/assets/bb73ddb1-9422-44e9-aa38-f1ac372913b9" />

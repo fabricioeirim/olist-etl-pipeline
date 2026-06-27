@@ -1,0 +1,5 @@
+# Ignorar pastas de credenciais e locais
+eng_dados/credenciais/*.json
+__pycache__/
+.env
+.ipynb_checkpoints

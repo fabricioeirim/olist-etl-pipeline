@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=****
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  scheduler:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /home/user/projeto_olist/airflow/dags:/opt/airflow/dags
+      - /home/user/projeto_olist/airflow/logs:/opt/airflow/logs
+      - /home/user/projeto_olist/airflow/plugins:/opt/airflow/plugins
+      # Mapeamento único para o projeto e tokens
+      - /home/user/projeto_engenharia_dados:/opt/airflow/meuprojeto
+      - /home/user/projeto_engenharia_dados/tokens:/opt/airflow/tokens
+    environment:
+      - LOAD_EXEMPLE=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/tokens/cole_aqui_sua_useraccount.json
+    command: scheduler
+
+  webserver:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/user/projeto_olist/airflow/dags:/opt/airflow/dags
+      - /home/user/projeto_olist/airflow/logs:/opt/airflow/logs
+      - /home/user/projeto_olist/airflow/plugins:/opt/airflow/plugins
+      # Mapeamento único para o projeto e tokens
+      - /home/user/projeto_engenharia_dados:/opt/airflow/meuprojeto
+      - /home/user/projeto_engenharia_dados/tokens:/opt/airflow/tokens
+    environment:
+      - LOAD_EXEMPLE=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/tokens/cole_aqui_sua_useraccount.json
+    command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
